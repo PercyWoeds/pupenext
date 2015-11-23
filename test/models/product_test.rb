@@ -13,6 +13,7 @@ class ProductTest < ActiveSupport::TestCase
     manufacture_order/composite_rows
     manufacture_order/recursive_composite_rows
     manufacture_order/rows
+    online_stores
     pending_updates
     product/keywords
     product/suppliers
