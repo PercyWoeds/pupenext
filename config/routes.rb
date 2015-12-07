@@ -11,6 +11,7 @@ Pupesoft::Application.routes.draw do
   resources :pending_product_updates
 
   scope module: :fixed_assets do
+    get :show_unprocessed, controller: :commodities
     resources :commodities, except: :destroy do
       get :purchase_orders
       get :sell
