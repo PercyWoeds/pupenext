@@ -873,6 +873,16 @@ fi:
         button_add: Button add
         button_search: Button search
         header: Header
+      show_unprocessed:
+        header: Käsiteltävät käyttöomaisuuslaskut ja tositteet
+        unprocessed_vouchers: Käsittelemättömät tositteet
+        no_unprocessed_vouchers: Ei käsittelemättömiä tositteita
+        unprocessed_purchase_orders: Käsittelemättömät ostolaskut
+        no_unprocessed_purchase_orders: Ei käsittelemättömiä ostolaskuja
+      unprocessed_items:
+        head_id: Laskutaulun tunnus
+        head_sum: Summa
+        head_creator: Laatija
   helpers:
     select:
       prompt: Valitse
