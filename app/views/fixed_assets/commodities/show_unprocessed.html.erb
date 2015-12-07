@@ -1,0 +1,19 @@
+<%= render "administration/header", text: t('.header') %>
+<br/><br/>
+
+<% if @unprocessed_purchase_orders.count > 0 %>
+  <%= render "administration/header", text: t('.unprocessed_purchase_orders') %>
+  <%= render 'unprocessed_items', resource: @unprocessed_purchase_orders %>
+<% else %>
+  <%= render "administration/header", text: t('.no_unprocessed_purchase_orders') %>
+<% end %>
+
+<br/><br/>
+
+<% if @unprocessed_vouchers.count > 0 %>
+  <%= render "administration/header", text: t('.unprocessed_vouchers') %>
+  <%= render 'unprocessed_items', resource: @unprocessed_vouchers %>
+<% else %>
+  <%= render "administration/header", text: t('.no_unprocessed_vouchers') %>
+<% end %>
+

@@ -1,0 +1,15 @@
+<table>
+<tr>
+  <th><%= t('.head_id') %></th>
+  <th><%= t('.head_sum') %></th>
+  <th><%= t('.head_creator') %></th>
+</tr>
+<% resource.each do |res| %>
+<tr>
+  <td><%= res.tunnus %></td>
+  <td><%= res.rows.sum(:summa) %></td>
+  <td><%= res.laatija %></td>
+</tr>
+<% end %>
+</table>
+
