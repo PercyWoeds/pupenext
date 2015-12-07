@@ -1,8 +1,9 @@
 class FixedAssets::CommoditiesController < AdministrationController
-  before_action :find_resource, except: [:index, :new, :create]
+  before_action :find_resource, except: [:index, :new, :create, :show_unprocessed]
   before_action :find_voucher_row, only: [:link_order, :link_voucher, :unlink]
   before_action :linkable_purchase_orders, only: [:purchase_orders, :link_order]
   before_action :linkable_vouchers, only: [:vouchers, :link_voucher]
+  before_action :unprocessed_heads, only: [:show_unprocessed]
 
   # GET /commodities
   def index
@@ -103,6 +104,10 @@ class FixedAssets::CommoditiesController < AdministrationController
     CommodityRowGenerator.new(options).generate_rows
 
     redirect_to edit_commodity_path(@commodity)
+  end
+
+  # GET /show_unprocessed
+  def show_unprocessed
   end
 
   def sell
@@ -213,5 +218,18 @@ class FixedAssets::CommoditiesController < AdministrationController
       @commodity.profit_account = Account.find_by(tilino: params[:profit_account])
       @commodity.sales_account = Account.find_by(tilino: params[:sales_account])
       @commodity.depreciation_remainder_handling = params[:depreciation_remainder_handling]
+    end
+
+    def unprocessed_heads
+      viable_accounts = current_company.accounts.evl_accounts.select(:tilino)
+      linkable_head_ids = current_company.voucher_rows
+        .where(tilino: viable_accounts, tapvm: current_company.current_fiscal_year, commodity_id: nil)
+        .pluck(:ltunnus)
+      # Sopivat ostolaskut
+      @unprocessed_purchase_orders = current_company.purchase_invoices_paid
+        .where(tunnus: linkable_head_ids).includes(:rows)
+      # Sopivat tositteet
+      @unprocessed_vouchers = current_company.vouchers
+        .where(tunnus: linkable_head_ids).includes(:rows)
     end
 end
