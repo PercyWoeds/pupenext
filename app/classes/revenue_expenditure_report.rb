@@ -12,7 +12,7 @@ class RevenueExpenditureReport
 
     {
       history_revenue: myyntisaamiset(time_start, yesterday) + factoring_myyntisaamiset_sum(time_start, yesterday),
-      history_expenditure: ostovelat(time_start, yesterday),
+      history_expenditure: ostovelat(time_start, yesterday) + history_revenue_expenditures_details,
       history_concern_accounts_payable: konserni_ostovelat(time_start, yesterday),
       history_concern_accounts_receivable: konserni_myyntisaamiset(time_start, yesterday),
       weekly: weekly,
@@ -89,6 +89,11 @@ class RevenueExpenditureReport
       end
     end
 
+    def history_revenue_expenditures_details
+      year_week = Date.today.strftime "%Y%V"
+      company.revenue_expenditures.where("selite < ?", year_week).pluck(:selitetark_2).map(&:to_d).sum
+    end
+
     #  calculate weekly amounts for
     #  - sales
     #  - purchases
@@ -96,7 +101,7 @@ class RevenueExpenditureReport
     #  - company accounts payable
     #  - alternative expenditures
     def weekly
-      @weekly ||= loop_weeks.map do |number, start, stop|
+      @weekly ||= loop_weeks.map do |number, year_week, start, stop|
 
         # Myyntisaamiset menee myyntiin sellaisenaan.
         # Factoring myynnistä 70% kuuluu laittaa viikolle tapahtumapäivän (+ 1pv) mukaan
@@ -109,13 +114,13 @@ class RevenueExpenditureReport
         purchases  = ostovelat(start, stop)
         purchases += revenue_expenditures(number)
 
-       {
+        {
           week: number,
           sales: sales,
           purchases: purchases,
           concern_accounts_receivable: konserni_myyntisaamiset(start, stop),
           concern_accounts_payable: konserni_ostovelat(start, stop),
-          alternative_expenditures: revenue_expenditures_details(number),
+          alternative_expenditures: revenue_expenditures_details(year_week),
         }
       end
     end
@@ -141,6 +146,7 @@ class RevenueExpenditureReport
 
         [
           "#{date.cweek} / #{date.cwyear}",
+          date.strftime("%Y%V"),
           beginning_of_week,
           date.end_of_week
         ]

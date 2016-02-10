@@ -125,9 +125,16 @@ class RevenueExpenditureReportTest < ActiveSupport::TestCase
     invoice_three.accounting_rows.create!(tilino: @payable_concern, summa: -46.61, tapvm: invoice_three.tapvm)
     invoice_three.accounting_rows.create!(tilino: @receivable_regular, summa: -46.61, tapvm: invoice_three.tapvm)
 
+    # Lets add one alternative expenditure for previous week
+    keyword_one = keywords(:weekly_alternative_expenditure_one)
+    selite_date = Date.today - 1.week
+    keyword_one.selite = "#{selite_date.cweek} / #{selite_date.year}"
+    keyword_one.selitetark_2 = '22.30'
+    keyword_one.save!
+
     # history_expenditure should include invoice one and three
     response = RevenueExpenditureReport.new(1).data
-    assert_equal 128, response[:history_expenditure]
+    assert_equal 150.30, response[:history_expenditure]
   end
 
   test 'weekly sales' do
@@ -342,13 +349,13 @@ class RevenueExpenditureReportTest < ActiveSupport::TestCase
   test 'weekly alternative expenditures' do
     # Lets add one alternative expenditure for current week
     keyword_one = keywords(:weekly_alternative_expenditure_one)
-    keyword_one.selite = "#{Date.today.cweek} / #{Date.today.year}"
+    keyword_one.selite = Date.today.strftime "%Y%V"
     keyword_one.selitetark_2 = '53.39'
     keyword_one.save!
 
     # Should not sum this keyword's amount
     keyword_two = keyword_one.dup
-    keyword_two.selite = "#{1.week.from_now.to_date.cweek} / #{1.week.from_now.year}"
+    keyword_two.selite = 1.week.from_now.to_date.strftime "%Y%V"
     keyword_two.selitetark_2 = '100'
     keyword_two.save!
 
